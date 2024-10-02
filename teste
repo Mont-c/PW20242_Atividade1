@@ -1,0 +1,19 @@
+from flask import Flask, render_template, request, redirect
+
+app = Flask(__name__)
+
+@app.route('/cadastro')
+def cadastro():
+    return render_template('cadastro.html', titulo="Cadastro de Produto")
+
+@app.route('/post_cadastro', methods=['POST'])
+def post_cadastro():
+    nome = request.form['nome']
+    descricao = request.form['descricao']
+    estoque = request.form['estoque']
+    preco = request.form['preco']
+    categoria = request.form['categoria']
+    
+    # Adicione lógica para salvar os dados aqui
+
+    return redirect('/')

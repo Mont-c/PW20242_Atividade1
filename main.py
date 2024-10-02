@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Form
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
@@ -19,3 +20,17 @@ async def read_root(request: Request):
 
 if __name__ == "__main__":
  uvicorn.run("main:app", port=8000, reload=True)
+
+@app.rout('/cadastro')
+def cadastro():
+    return templates.TemplateResponse('cadastro.html', titulo='Cadastro de Produto')
+
+app.route('/post_cadastro', methods=['POST'])
+def post_cadastro(request: Request,
+                  nome: str = Form(...),
+                  descricao: str = Form(...),
+                  estoque: str = Form(...),
+                  preco: str = Form(...),
+                  categoria: str = Form(...)):
+                  salvar_cadastro(nome, descricao, estoque, preco, categoria)
+                  return RedirectResponse("/Cadastro de Produto", 303)
