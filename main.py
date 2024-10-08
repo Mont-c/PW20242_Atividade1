@@ -3,6 +3,9 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
+from models.produto_model import Produto
+from repositories import produto_repo
+from util import obter_conexão
 import uvicorn
 
 #Criação do objeto FastAPI
@@ -21,7 +24,7 @@ async def read_root(request: Request):
 if __name__ == "__main__":
  uvicorn.run("main:app", port=8000, reload=True)
 
-@app.rout('/cadastro')
+@app.route('/cadastro')
 def cadastro():
     return templates.TemplateResponse('cadastro.html', titulo='Cadastro de Produto')
 
@@ -32,5 +35,19 @@ def post_cadastro(request: Request,
                   estoque: str = Form(...),
                   preco: str = Form(...),
                   categoria: str = Form(...)):
-                  salvar_cadastro(nome, descricao, estoque, preco, categoria)
-                  return RedirectResponse("/Cadastro de Produto", 303)
+                  
+                  produto = Produto(nome=nome, descricao=descricao, estoque=estoque, preco=preco, categoria=categoria)
+
+                  conexao = obter_conexão()
+
+                  try:
+                     #Inserindo o Produto no banco
+                     produto_repo.inserir(conexao, produto)
+                     return RedirectResponse(url="/cadastro_recebido", status_code=303)
+                  except Exception as i:
+                        print(f'Erro ao inserir produto: {i}')
+                  return RedirectResponse(url="/cadastro", status_code=303)
+
+@app.get("/cadastro_recebido")
+def cadastro_recebifo(request: Request):
+      return templates.TemplateResponse("cadastro_recebido.html", {"request": request})
