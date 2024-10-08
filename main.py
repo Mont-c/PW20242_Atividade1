@@ -1,3 +1,4 @@
+from urllib import request
 from fastapi import FastAPI, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -5,8 +6,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from models.produto_model import Produto
 from repositories import produto_repo
-from util import obter_conexão
 import uvicorn
+from util import obter_conexao
+
+
+produto_repo.criar_tabela()
 
 #Criação do objeto FastAPI
 app = FastAPI()
@@ -25,10 +29,11 @@ if __name__ == "__main__":
  uvicorn.run("main:app", port=8000, reload=True)
 
 @app.route('/cadastro')
-def cadastro():
-    return templates.TemplateResponse('cadastro.html', titulo='Cadastro de Produto')
+def cadastro(request: Request):
+    
+    return templates.TemplateResponse('cadastro.html', {"request": request })
 
-app.route('/post_cadastro', methods=['POST'])
+@app.route('/post_cadastro', methods=['POST'])
 def post_cadastro(request: Request,
                   nome: str = Form(...),
                   descricao: str = Form(...),
@@ -38,7 +43,7 @@ def post_cadastro(request: Request,
                   
                   produto = Produto(nome=nome, descricao=descricao, estoque=estoque, preco=preco, categoria=categoria)
 
-                  conexao = obter_conexão()
+                  conexao = obter_conexao()
 
                   try:
                      #Inserindo o Produto no banco
@@ -46,8 +51,11 @@ def post_cadastro(request: Request,
                      return RedirectResponse(url="/cadastro_recebido", status_code=303)
                   except Exception as i:
                         print(f'Erro ao inserir produto: {i}')
-                  return RedirectResponse(url="/cadastro", status_code=303)
+                  return RedirectResponse(url="/cadastro_recebido", status_code=303)
 
 @app.get("/cadastro_recebido")
 def cadastro_recebifo(request: Request):
       return templates.TemplateResponse("cadastro_recebido.html", {"request": request})
+
+if __name__ == "__main__":
+ uvicorn.run("main:app", port=8000, reload=True)

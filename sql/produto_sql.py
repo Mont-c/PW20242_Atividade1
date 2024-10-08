@@ -1,4 +1,4 @@
-#Comando para criar a tabela 'produto' se ela não existir
+
 SQL_CRIAR_TABELA = """
 CREATE TABLE IF NOT EXISTS produto (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -10,13 +10,19 @@ CREATE TABLE IF NOT EXISTS produto (
 );
 """
 
-#Comando para inserir um novo produto na tabela 'produto'
+
 SQL_INSERIR = """
 INSERT INTO produto (nome, descricao, estoque, preco, categoria)
 VALUES (?, ?, ?, ?, ?);
 """
 
-#Comando para excluir um produto da tabela 'produto' usando o id
+
 SQL_EXCLUIR = """
 DELETE FROM produto WHERE id = ?;
+"""
+
+SQL_OBTER_TODOS = """
+    SELECT id, nome, descricao, estoque, preco, categoria
+    FROM produto
+    ORDER BY nome
 """
